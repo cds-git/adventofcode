@@ -25,20 +25,16 @@ static class Day01
                  var i = 0;
                  foreach (var cell in row)
                  {
-                     // Console.WriteLine($"i = {i}, acc.Count = {acc.Count}");
-                     // Console.WriteLine($"Before: {JsonSerializer.Serialize(acc)}");
                      if (acc.Count <= i) acc.Add([]);
                      acc[i++].Add(cell);
-                     // Console.WriteLine($"After: {JsonSerializer.Serialize(acc)}");
                  }
-
                  return acc;
              }
          );
 
     private static (T a, T b) ToPair<T>(this List<T> list) => list switch
     {
-    [T a, T b] => (a, b),
-        _ => throw new ArgumentException("")
+        [T a, T b] => (a, b),
+        _ => throw new ArgumentException("Not a pair")
     };
 }
