@@ -17,8 +17,6 @@ static class Day06
         """.Split(Environment.NewLine);
 
         var map = input.Select(row => row.ToCharArray()).ToArray();
-        var height = map.Length;
-        var width = map[0].Length;
         var currentPosition = map.GetStartingPosition();
         var uniquePositions = new HashSet<Point>();
 
