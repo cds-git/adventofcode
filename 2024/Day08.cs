@@ -23,16 +23,22 @@ static class Day08
         var antennas = map.GetGroupedAntennas().ToList();
 
         var antinodesCount = antennas
-            .SelectMany(a => a.GetAntinodes(map))
+            .SelectMany(a => a.GetAntinodes(map, GetNonResonatingAntinodes))
             .Distinct()
             .Count();
         Console.WriteLine($"Antinodes: {antinodesCount}");
+
+        var resonatingAntinodesCount = antennas
+           .SelectMany(a => a.GetAntinodes(map, GetResonatingAntinodes))
+           .Distinct()
+           .Count();
+        Console.WriteLine($"Resonating Antinodes: {resonatingAntinodesCount}");
     }
 
-    private static IEnumerable<Position> GetAntinodes(this (char frequency, List<Position> positions) antennaSet, char[][] map) =>
-        antennaSet.GetPairs().SelectMany(pair => map.GetAntinodes(pair.a, pair.b));
+    private static IEnumerable<Position> GetAntinodes(this (char frequency, List<Position> positions) antennaSet, char[][] map, Func<char[][], Position, Position, List<Position>> getAntinodes) =>
+        antennaSet.GetPairs().SelectMany(pair => getAntinodes(map, pair.a, pair.b));
 
-    private static List<Position> GetAntinodes(this char[][] map, Position a, Position b)
+    private static List<Position> GetNonResonatingAntinodes(this char[][] map, Position a, Position b)
     {
         var xDiff = a.X - b.X;
         var yDiff = a.Y - b.Y;
@@ -44,6 +50,30 @@ static class Day08
 
         var antinode2 = new Position(b.X - xDiff, b.Y - yDiff);
         if (map.IsWithinBounds(antinode2)) antinodes.Add(antinode2);
+
+        return antinodes;
+    }
+
+    private static List<Position> GetResonatingAntinodes(this char[][] map, Position a, Position b)
+    {
+        var antinodes = new List<Position>();
+
+        var xDiff = a.X - b.X;
+        var yDiff = a.Y - b.Y;
+
+        var pos1 = a;
+        while (map.IsWithinBounds(pos1))
+        {
+            antinodes.Add(pos1);
+            pos1 = new Position(pos1.X + xDiff, pos1.Y + yDiff);
+        }
+
+        var pos2 = b;
+        while (map.IsWithinBounds(pos2))
+        {
+            antinodes.Add(pos2);
+            pos2 = new Position(pos2.X - xDiff, pos2.Y - yDiff);
+        }
 
         return antinodes;
     }
